@@ -64,13 +64,8 @@
   });
   myCustomChord.draw(matrix);
 
-/*
- * Disable the ImprovedChordDiagram until we re-factor its implementation to
- * work with d3.chart.
- */
-/*
-  var myImprovedChord = ImprovedChord();
-  myImprovedChord(matrix);
-*/
+  var myImprovedChord = d3.select("body")
+    .append("svg").chart("ImprovedChord");
+  myImprovedChord.draw(matrix);
 
 }(this));
