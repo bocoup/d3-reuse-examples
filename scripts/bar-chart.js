@@ -2,63 +2,63 @@ d3.chart("BarChart", {
 
   initialize: function(options) {
 
-  options = options || {};
+    options = options || {};
 
-  var chart = this;
+    var chart = this;
 
-  this.x = d3.scale.linear();
+    this.x = d3.scale.linear();
 
-  this.y = d3.scale.linear()
-    .domain([0, 100]);
+    this.y = d3.scale.linear()
+      .domain([0, 100]);
 
-  this.base
-    .attr("class", "chart");
+    this.base
+      .attr("class", "chart");
 
-  function onEnter() {
-    var length = this.chart().length;
+    function onEnter() {
+      var length = this.chart().length;
 
-    this.attr("x", function(d, i) { return chart.x(i + 1) - .5; })
-        .attr("y", function(d) { return chart.h - chart.y(d.value) - .5; })
-        .attr("width", chart.w / length)
-        .attr("height", function(d) { return chart.y(d.value); });
-  }
+      this.attr("x", function(d, i) { return chart.x(i + 1) - .5; })
+          .attr("y", function(d) { return chart.h - chart.y(d.value) - .5; })
+          .attr("width", chart.w / length)
+          .attr("height", function(d) { return chart.y(d.value); });
+    }
 
-  function onEnterTrans() {
-    this.duration(1000)
-        .attr("x", function(d, i) { return chart.x(i) - .5; });
-  }
+    function onEnterTrans() {
+      this.duration(1000)
+          .attr("x", function(d, i) { return chart.x(i) - .5; });
+    }
 
-  function onTrans() {
-    this.duration(1000)
-        .attr("x", function(d, i) { return chart.x(i) - .5; });
-  }
+    function onTrans() {
+      this.duration(1000)
+          .attr("x", function(d, i) { return chart.x(i) - .5; });
+    }
 
-  function onExitTrans() {
-    this.duration(1000)
-        .attr("x", function(d, i) { return chart.x(i - 1) - .5; })
-        .remove();
-  }
+    function onExitTrans() {
+      this.duration(1000)
+          .attr("x", function(d, i) { return chart.x(i - 1) - .5; })
+          .remove();
+    }
 
-  function dataBind(data) {
-    return this.selectAll("rect")
-      .data(data, function(d) { return d.time; });
-  }
+    function dataBind(data) {
+      return this.selectAll("rect")
+        .data(data, function(d) { return d.time; });
+    }
 
-  function insert() {
-    return this.insert("rect", "line");
-  }
+    function insert() {
+      return this.insert("rect", "line");
+    }
 
-  var bars = this.layer("bars", this.base.append("g"), {
-    dataBind: dataBind,
-    insert: insert
-  });
+    var bars = this.layer("bars", this.base.append("g"), {
+      dataBind: dataBind,
+      insert: insert
+    });
 
-  bars.on("enter", onEnter);
-  bars.on("enter:transition", onEnterTrans);
-  bars.on("update:transition", onTrans);
-  bars.on("exit:transition", onExitTrans);
-  this.width(options.width || 600);
-  this.height(options.height || 80);
+    bars.on("enter", onEnter);
+    bars.on("enter:transition", onEnterTrans);
+    bars.on("update:transition", onTrans);
+    bars.on("exit:transition", onExitTrans);
+    this.width(options.width || 600);
+    this.height(options.height || 80);
 
   },
 
