@@ -15,7 +15,8 @@
   ];
 
   var dataSrc = new DataSrc();
-  var myBarChart = BarChart();
+  var myBarChart = d3.select("body")
+    .append("svg").chart("BarChart");
   myBarChart.draw(dataSrc);
   setInterval(function() {
     dataSrc.fetch();
@@ -23,20 +24,26 @@
   }, 1500);
 
   var dataSrc2 = new DataSrc();
-  var myCustomBarChart = BarChart();
+  var myCustomBarChart = d3.select("body")
+    .append("svg").chart("BarChart");
   var fadeOut = function() {
     this.attr("opacity", function(d, i) {
       return i / dataSrc2.data.length;
     });
   };
-  myCustomBarChart.on("enter", fadeOut);
-  myCustomBarChart.on("update:transition", fadeOut);
+  myCustomBarChart.layer("bars").on("enter", fadeOut);
+  myCustomBarChart.layer("bars").on("update:transition", fadeOut);
   myCustomBarChart.draw(dataSrc2);
   setInterval(function() {
     dataSrc2.fetch();
     myCustomBarChart.draw(dataSrc2);
   }, 1500);
 
+/*
+ * Disable the FadingBarChart until we re-factor its implementation to work
+ * with d3.chart.
+ */
+/*
   var dataSrc3 = new DataSrc();
   var myFadingBarChart = FadingBarChart();
   myFadingBarChart.draw(dataSrc);
@@ -44,6 +51,7 @@
     dataSrc3.fetch();
     myFadingBarChart.draw(dataSrc);
   }, 1500);
+*/
 
   var myChord = Chord();
   myChord(matrix);

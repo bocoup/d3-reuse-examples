@@ -1,87 +1,93 @@
-window.BarChart = function(options) {
+d3.chart("BarChart", {
 
-  "use strict";
+  initialize: function(options) {
 
   options = options || {};
 
-  var w, h,
-    length = 0;
+  var chart = this;
 
-  var x = d3.scale.linear();
+  this.x = d3.scale.linear();
 
-  var y = d3.scale.linear()
+  this.y = d3.scale.linear()
     .domain([0, 100]);
 
-  var svg = d3.select("body").append("svg")
+  this.base
     .attr("class", "chart");
 
   function onEnter() {
-    this.attr("x", function(d, i) { return x(i + 1) - .5; })
-        .attr("y", function(d) { return h - y(d.value) - .5; })
-        .attr("width", w / length)
-        .attr("height", function(d) { return y(d.value); });
+    var length = this.chart().length;
+
+    this.attr("x", function(d, i) { return chart.x(i + 1) - .5; })
+        .attr("y", function(d) { return chart.h - chart.y(d.value) - .5; })
+        .attr("width", chart.w / length)
+        .attr("height", function(d) { return chart.y(d.value); });
   }
 
   function onEnterTrans() {
     this.duration(1000)
-        .attr("x", function(d, i) { return x(i) - .5; });
+        .attr("x", function(d, i) { return chart.x(i) - .5; });
   }
 
   function onTrans() {
     this.duration(1000)
-        .attr("x", function(d, i) { return x(i) - .5; });
+        .attr("x", function(d, i) { return chart.x(i) - .5; });
   }
 
   function onExitTrans() {
     this.duration(1000)
-        .attr("x", function(d, i) { return x(i - 1) - .5; })
+        .attr("x", function(d, i) { return chart.x(i - 1) - .5; })
         .remove();
   }
 
-  function dataBind(dataSrc) {
-    length = dataSrc.data.length;
-    x.domain([0, length]);
+  function dataBind(data) {
     return this.selectAll("rect")
-      .data(dataSrc.data, function(d) { return d.time; });
+      .data(data, function(d) { return d.time; });
   }
 
   function insert() {
     return this.insert("rect", "line");
   }
 
-  var chart = svg.layer({
+  var bars = this.layer("bars", this.base.append("g"), {
     dataBind: dataBind,
     insert: insert
   });
 
-  chart.on("enter", onEnter);
-  chart.on("enter:transition", onEnterTrans);
-  chart.on("update:transition", onTrans);
-  chart.on("exit:transition", onExitTrans);
+  bars.on("enter", onEnter);
+  bars.on("enter:transition", onEnterTrans);
+  bars.on("update:transition", onTrans);
+  bars.on("exit:transition", onExitTrans);
+  this.width(options.width || 600);
+  this.height(options.height || 80);
 
-  chart.width = function(newWidth) {
+  },
+
+  width: function(newWidth) {
     if (!arguments.length) {
-      return w;
+      return this.w;
     }
-    w = newWidth;
-    x.range([0, w]);
-    svg.attr("width", w);
+    this.w = newWidth;
+    this.x.range([0, this.w]);
+    this.base.attr("width", this.w);
     return this;
-  };
+  },
 
-  chart.height = function(newHeight) {
+  height: function(newHeight) {
     if (!arguments.length) {
-      return h;
+      return this.h;
     }
-    h = newHeight;
-    y.rangeRound([0, h]);
-    svg.attr("height", h);
+    this.h = newHeight;
+    this.y.rangeRound([0, this.h]);
+    this.base.attr("height", this.h);
     return this;
-  };
+  },
 
-  chart.width(options.width || 600);
-  chart.height(options.height || 80);
+  // Convert the provided dataSrc object into a data array, and update relevant
+  // chart attributes so it can updated to changing input sizes.
+  transform: function(dataSrc) {
+    this.length = dataSrc.data.length;
+    this.x.domain([0, this.length]);
+    return dataSrc.data;
+  }
 
-  return chart;
-
-};
+});
