@@ -5,10 +5,9 @@ window.BarChart = function(options) {
   options = options || {};
 
   var w, h,
-    data = options.data || [];
+    length = 0;
 
-  var x = d3.scale.linear()
-    .domain([0, data.length]);
+  var x = d3.scale.linear();
 
   var y = d3.scale.linear()
     .domain([0, 100]);
@@ -19,7 +18,7 @@ window.BarChart = function(options) {
   function onEnter() {
     this.attr("x", function(d, i) { return x(i + 1) - .5; })
         .attr("y", function(d) { return h - y(d.value) - .5; })
-        .attr("width", w / data.length)
+        .attr("width", w / length)
         .attr("height", function(d) { return y(d.value); });
   }
 
@@ -39,21 +38,26 @@ window.BarChart = function(options) {
         .remove();
   }
 
-  function chart() {
-
-    var rect = svg.selectAll("rect")
-      .data(data, function(d) { return d.time; });
-    var entering = rect.enter().insert("rect", "line");
-    var enteringTrans = entering.transition();
-    var exiting = rect.exit();
-    var trans = rect.transition();
-    var exitingTrans = exiting.transition();
-
-    entering.call(onEnter);
-    enteringTrans.call(onEnterTrans);
-    trans.call(onTrans);
-    exitingTrans.call(onExitTrans);
+  function dataBind(dataSrc) {
+    length = dataSrc.data.length;
+    x.domain([0, length]);
+    return this.selectAll("rect")
+      .data(dataSrc.data, function(d) { return d.time; });
   }
+
+  function insert() {
+    return this.insert("rect", "line");
+  }
+
+  var chart = svg.layer({
+    dataBind: dataBind,
+    insert: insert
+  });
+
+  chart.on("enter", onEnter);
+  chart.on("enter:transition", onEnterTrans);
+  chart.on("update:transition", onTrans);
+  chart.on("exit:transition", onExitTrans);
 
   chart.width = function(newWidth) {
     if (!arguments.length) {

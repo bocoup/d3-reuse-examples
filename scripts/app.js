@@ -15,11 +15,11 @@
   ];
 
   var dataSrc = new DataSrc();
-  var myBarChart = BarChart({ data: dataSrc.data });
-  myBarChart();
+  var myBarChart = BarChart();
+  myBarChart.draw(dataSrc);
   setInterval(function() {
     dataSrc.fetch();
-    myBarChart();
+    myBarChart.draw(dataSrc);
   }, 1500);
 
   var myChord = Chord();
