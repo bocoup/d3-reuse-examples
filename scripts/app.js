@@ -68,4 +68,19 @@
     .append("svg").chart("ImprovedChord");
   myImprovedChord.draw(matrix);
 
+  var dataSrc4 = new DataSrc();
+  var hybrid = d3.select("body")
+    .append("svg").chart("Hybrid");
+  hybrid.draw({
+    series1: dataSrc4,
+    series2: matrix
+  });
+  setInterval(function() {
+    dataSrc4.fetch();
+    hybrid.draw({
+      series1: dataSrc4,
+      series2: matrix
+    });
+  }, 1500);
+
 }(this));
